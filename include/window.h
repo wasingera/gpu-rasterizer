@@ -1,4 +1,15 @@
+#pragma once
+
 #include <SDL2/SDL.h>
+
+typedef struct {
+    float x;
+    float y;
+    float r;
+    float g;
+    float b;
+    float a;
+} Point;
 
 class Window {
     public:
@@ -10,9 +21,12 @@ class Window {
         void poll_events();
         void set_color(int r, int g, int b, int a);
 
-        void put_pixel(int x, int y);
+        void put_pixel(Point p);
+        void draw_line(Point p0, Point p1);
 
     private:
         SDL_Window* window;
         SDL_Renderer* renderer;
+        int width;
+        int height;
 };

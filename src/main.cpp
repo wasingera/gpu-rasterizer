@@ -1,6 +1,3 @@
-// sdl2 code to create a window with an event loop
-
-#include <iostream>
 #include <SDL2/SDL.h>
 #include "window.h"
 
