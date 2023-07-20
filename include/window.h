@@ -8,7 +8,6 @@ typedef struct {
     float r;
     float g;
     float b;
-    float a;
 } Point;
 
 class Window {
@@ -19,10 +18,15 @@ class Window {
         void clear();
         void update();
         void poll_events();
-        void set_color(int r, int g, int b, int a);
+        void set_color(int r, int g, int b);
 
         void put_pixel(Point p);
         void draw_line(Point p0, Point p1);
+
+        float edge_function(Point a, Point b, Point c);
+        void draw_triangle(Point a, Point b, Point c);
+
+        Point point_to_screen(Point p);
 
     private:
         SDL_Window* window;
