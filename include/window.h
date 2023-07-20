@@ -31,6 +31,7 @@ class Window {
     private:
         SDL_Window* window;
         SDL_Renderer* renderer;
+        SDL_Surface* surface;
         int width;
         int height;
 };
