@@ -8,35 +8,28 @@
 Window::Window(const char* title, int width, int height) {
     this->window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                     width, height, SDL_WINDOW_SHOWN);
-    this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
     this->surface = SDL_GetWindowSurface(this->window);
     this->width = width;
     this->height = height;
 }
 
 Window::~Window() {
-    SDL_DestroyRenderer(this->renderer);
+    // SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow(this->window);
 }
 
-void Window::clear() {
-    SDL_RenderClear(this->renderer);
-}
-
-void Window::set_color(int r, int g, int b) {
-    SDL_SetRenderDrawColor(this->renderer, r, g, b, 255);
+void Window::clear(int r, int g, int b) {
+    SDL_FillRect(this->surface, NULL, SDL_MapRGB(this->surface->format, r, g, b));
 }
 
 void Window::update() {
     SDL_UpdateWindowSurface(this->window);
-    // SDL_RenderPresent(this->renderer);
 }
 
 void Window::poll_events() {
-    set_color(0, 0, 0);
-    clear();
-    draw_line({-100, -100, 255, 255, 255}, {100, 100, 255, 255, 255});
-    // draw_triangle({-100, -100, 255, 0, 0}, {0, 100, 0, 255, 0}, {100, -100, 0, 0, 255});
+    clear(255, 255, 255);
+    // draw_line({-100, -100, 255, 255, 255}, {100, 100, 255, 255, 255});
+    draw_triangle({-100, -100, 255, 0, 0}, {0, 100, 0, 255, 0}, {100, -100, 0, 0, 255});
 
     put_pixel({0, 0, 255, 255, 255});
 
@@ -49,18 +42,12 @@ void Window::poll_events() {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
-
-            // put_pixel({0, 0, 255, 255, 255, 255});
-            // draw_line({-100, -100, 255, 255, 255, 255}, {100, 100, 255, 255, 255, 255});
-
         }
     }
 }
 
 void Window::put_pixel(Point p) {
     p = point_to_screen(p);
-    // set_color(p.r, p.g, p.b);
-    // SDL_RenderDrawPoint(this->renderer, p.x, p.y);
 
     // update single pixel in surface buffer
     auto surface = SDL_GetWindowSurface(this->window);
@@ -79,8 +66,33 @@ Point Window::point_to_screen(Point p) {
     return p;
 }
 
+float Window::edge_function(Point a, Point b, Point c) {
+    // edge function
+    // (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)
+
+    return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
+}
+
 void Window::draw_triangle(Point a, Point b, Point c) {
 
+    float area = edge_function(a, b, c);
+
+    for (int x = -this->width / 2; x < this->width / 2; x++) {
+        for (int y = -this->height / 2; y < this->height / 2; y++) {
+            Point p = {(float) x, (float) y, 255, 255, 255};
+
+            float w0 = edge_function(b, c, p) / area;
+            float w1 = edge_function(c, a, p) / area;
+            float w2 = edge_function(a, b, p) / area;
+
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                p.r = w0 * a.r + w1 * b.r + w2 * c.r;
+                p.g = w0 * a.g + w1 * b.g + w2 * c.g;
+                p.b = w0 * a.b + w1 * b.b + w2 * c.b;
+                put_pixel(p);
+            }
+        }
+    }
 }
 
 void Window::draw_line(Point p0, Point p1) {

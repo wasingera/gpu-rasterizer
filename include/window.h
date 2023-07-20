@@ -15,7 +15,7 @@ class Window {
         Window(const char* title, int width, int height);
         ~Window();
 
-        void clear();
+        void clear(int r, int g, int b);
         void update();
         void poll_events();
         void set_color(int r, int g, int b);
@@ -30,7 +30,6 @@ class Window {
 
     private:
         SDL_Window* window;
-        SDL_Renderer* renderer;
         SDL_Surface* surface;
         int width;
         int height;
