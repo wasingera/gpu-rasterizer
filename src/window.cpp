@@ -38,7 +38,8 @@ void Window::poll_events() {
                 running = false;
             }
 
-            put_pixel({0, 0, 255, 255, 255, 255});
+            // put_pixel({0, 0, 255, 255, 255, 255});
+            draw_line({-100, -100, 255, 255, 255, 255}, {100, 100, 255, 255, 255, 255});
 
             update();
         }
@@ -57,7 +58,7 @@ void Window::put_pixel(Point p) {
 void Window::draw_line(Point p0, Point p1) {
     // bresenham line algorithm
     int dx = std::abs(p1.x - p0.x);
-    int dy = std::abs(p1.y - p0.y);
+    int dy = -std::abs(p1.y - p0.y);
     int sx = (p0.x < p1.x) ? 1 : -1;
     int sy = (p0.y < p1.y) ? 1 : -1;
     int err = dx + dy;
