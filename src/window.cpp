@@ -3,7 +3,6 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdio>
-#include <cuda_runtime.h>
 
 Window::Window(const char* title, int width, int height) {
     this->window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -11,6 +10,11 @@ Window::Window(const char* title, int width, int height) {
     this->surface = SDL_GetWindowSurface(this->window);
     this->width = width;
     this->height = height;
+    this->depth_buffer = new int[width * height];
+
+    for (int i = 0; i < width * height; i++) {
+        this->depth_buffer[i] = 2147483647;
+    }
 }
 
 Window::~Window() {
@@ -29,7 +33,8 @@ void Window::update() {
 void Window::poll_events() {
     clear(0,0,0);
     // draw_line({-100, -100, 255, 0, 0}, {100, 100, 255, 0, 0});
-    draw_triangle({100, -100, 0, 0, 255}, {0, 100, 0, 255, 0}, {-100, -100, 255, 0, 0});
+    draw_triangle({100, 0, 1, 0, 0, 255}, {0, 200, 1, 0, 255, 0}, {-100, 0, 1, 255, 0, 0});
+    draw_triangle({100, -100, 1, 0, 0, 255}, {0, 100, 1, 0, 255, 0}, {-100, -100, 1, 255, 0, 0});
 
     update();
 
@@ -58,6 +63,9 @@ void Window::put_pixel(Point p) {
 
 Point Window::point_to_screen(Point p) {
     // convert coordinates to screen
+    p.x /= p.z;
+    p.y /= p.z;
+
     p.x = this->width / 2.0f + p.x;
     p.y = this->height / 2.0f - p.y;
 
