@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <cuda_runtime.h>
 
 typedef struct {
     float x;
@@ -9,6 +10,12 @@ typedef struct {
     float g;
     float b;
 } Point;
+
+
+__device__ float edge_function(Point* a, Point* b, Point* c);
+
+__global__ void draw_triangle_kernel(Point* a, Point* b, Point* c, void* pixels, int pitch, int width, int height);
+// __global__ void draw_triangle_kernel(Point a, Point b, Point c) {
 
 class Window {
     public:

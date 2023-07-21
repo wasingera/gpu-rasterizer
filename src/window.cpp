@@ -19,7 +19,7 @@ Window::~Window() {
 }
 
 void Window::clear(int r, int g, int b) {
-    SDL_FillRect(this->surface, NULL, SDL_MapRGB(this->surface->format, r, g, b));
+    SDL_FillRect(this->surface, NULL, SDL_MapRGBA(this->surface->format, r, g, b, 255));
 }
 
 void Window::update() {
@@ -27,11 +27,9 @@ void Window::update() {
 }
 
 void Window::poll_events() {
-    clear(255, 255, 255);
-    // draw_line({-100, -100, 255, 255, 255}, {100, 100, 255, 255, 255});
-    draw_triangle({-100, -100, 255, 0, 0}, {0, 100, 0, 255, 0}, {100, -100, 0, 0, 255});
-
-    put_pixel({0, 0, 255, 255, 255});
+    clear(0,0,0);
+    // draw_line({-100, -100, 255, 0, 0}, {100, 100, 255, 0, 0});
+    draw_triangle({100, -100, 0, 0, 255}, {0, 100, 0, 255, 0}, {-100, -100, 255, 0, 0});
 
     update();
 
@@ -53,9 +51,9 @@ void Window::put_pixel(Point p) {
     auto surface = SDL_GetWindowSurface(this->window);
     Uint8* pixel = (Uint8*) surface->pixels;
     pixel += ((int) p.y * surface->pitch) + ((int) p.x * sizeof(Uint32));
-    pixel[0] = p.r;
+    pixel[2] = p.r;
     pixel[1] = p.g;
-    pixel[2] = p.b;
+    pixel[0] = p.b;
 }
 
 Point Window::point_to_screen(Point p) {
@@ -64,35 +62,6 @@ Point Window::point_to_screen(Point p) {
     p.y = this->height / 2.0f - p.y;
 
     return p;
-}
-
-float Window::edge_function(Point a, Point b, Point c) {
-    // edge function
-    // (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)
-
-    return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
-}
-
-void Window::draw_triangle(Point a, Point b, Point c) {
-
-    float area = edge_function(a, b, c);
-
-    for (int x = -this->width / 2; x < this->width / 2; x++) {
-        for (int y = -this->height / 2; y < this->height / 2; y++) {
-            Point p = {(float) x, (float) y, 255, 255, 255};
-
-            float w0 = edge_function(b, c, p) / area;
-            float w1 = edge_function(c, a, p) / area;
-            float w2 = edge_function(a, b, p) / area;
-
-            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                p.r = w0 * a.r + w1 * b.r + w2 * c.r;
-                p.g = w0 * a.g + w1 * b.g + w2 * c.g;
-                p.b = w0 * a.b + w1 * b.b + w2 * c.b;
-                put_pixel(p);
-            }
-        }
-    }
 }
 
 void Window::draw_line(Point p0, Point p1) {
