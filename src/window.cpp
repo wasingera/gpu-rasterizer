@@ -1,8 +1,8 @@
 #include "window.h"
-#include <SDL_stdinc.h>
 #include <cmath>
 #include <algorithm>
 #include <cstdio>
+#include <limits>
 
 Window::Window(const char* title, int width, int height) {
     this->window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -10,20 +10,21 @@ Window::Window(const char* title, int width, int height) {
     this->surface = SDL_GetWindowSurface(this->window);
     this->width = width;
     this->height = height;
-    this->depth_buffer = new int[width * height];
+    this->depth_buffer = new float[width * height];
 
     for (int i = 0; i < width * height; i++) {
-        this->depth_buffer[i] = 2147483647;
+        this->depth_buffer[i] = std::numeric_limits<float>::max();
     }
 }
 
 Window::~Window() {
     // SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow(this->window);
+    delete this->depth_buffer;
 }
 
 void Window::clear(int r, int g, int b) {
-    SDL_FillRect(this->surface, NULL, SDL_MapRGBA(this->surface->format, r, g, b, 255));
+    SDL_FillRect(this->surface, NULL, SDL_MapRGB(this->surface->format, r, g, b));
 }
 
 void Window::update() {
@@ -33,8 +34,8 @@ void Window::update() {
 void Window::poll_events() {
     clear(0,0,0);
     // draw_line({-100, -100, 255, 0, 0}, {100, 100, 255, 0, 0});
-    draw_triangle({100, 0, 1, 0, 0, 255}, {0, 200, 1, 0, 255, 0}, {-100, 0, 1, 255, 0, 0});
-    draw_triangle({100, -100, 1, 0, 0, 255}, {0, 100, 1, 0, 255, 0}, {-100, -100, 1, 255, 0, 0});
+    // draw_triangle({100, -100, 1, 0, 0, 255}, {0, 100, 1, 0, 255, 0}, {-100, -100, 1, 255, 0, 0});
+    draw_triangle({100, 0, 1, 0, 0, 255}, {0, 200, 1.3, 0, 255, 0}, {-100, 0, 1, 255, 0, 0});
 
     update();
 
@@ -63,11 +64,19 @@ void Window::put_pixel(Point p) {
 
 Point Window::point_to_screen(Point p) {
     // convert coordinates to screen
-    p.x /= p.z;
-    p.y /= p.z;
+    // p.x /= p.z;
+    // p.y /= p.z;
+    // p.r /= p.z;
+    // p.g /= p.z;
+    // p.b /= p.z;
+    //
+    // p.x = this->width / 2.0f + p.x;
+    // p.y = this->height / 2.0f - p.y;
+    // p.z = 1.0f / p.z;
 
-    p.x = this->width / 2.0f + p.x;
-    p.y = this->height / 2.0f - p.y;
+    Point camera = {0, 0, 0, 0, 0, 0};
+    float d = 0.1;
+
 
     return p;
 }

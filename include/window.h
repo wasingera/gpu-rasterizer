@@ -15,7 +15,7 @@ typedef struct {
 
 __device__ float edge_function(Point* a, Point* b, Point* c);
 
-__global__ void draw_triangle_kernel(Point* a, Point* b, Point* c, void* pixels, int pitch, int width, int height, int* depth_buffer);
+__global__ void draw_triangle_kernel(Point* a, Point* b, Point* c, void* pixels, int pitch, int width, int height, float* depth_buffer);
 // __global__ void draw_triangle_kernel(Point a, Point b, Point c) {
 
 class Window {
@@ -41,5 +41,5 @@ class Window {
         SDL_Surface* surface;
         int width;
         int height;
-        int* depth_buffer;
+        float* depth_buffer;
 };
